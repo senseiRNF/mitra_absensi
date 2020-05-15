@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "493701966397",
+    "firebase_url": "https://mitraabsensi.firebaseio.com",
+    "project_id": "mitraabsensi",
+    "storage_bucket": "mitraabsensi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493701966397:android:58716b9946680d1abb9854",
+        "android_client_info": {
+          "package_name": "com.eastbuitenzorg.mitraabsensi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "493701966397-2oq0g34tv9ss8e92nlq12m1arv9mfjnb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eastbuitenzorg.mitraabsensi",
+            "certificate_hash": "2580f94644e64bac81f03085466a06cff86a76bc"
+          }
+        },
+        {
+          "client_id": "493701966397-tfks4dvmsf6uqur0f2ogurkp5fpvq0bs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoGAANb6D2zqCTUZoaWUryEjQj9EhDMQw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "493701966397-tfks4dvmsf6uqur0f2ogurkp5fpvq0bs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
