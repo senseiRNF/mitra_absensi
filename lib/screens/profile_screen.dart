@@ -8,7 +8,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String _alamat;
   String _email;
+  String _nama;
+  String _noTelp;
 
   @override
   void initState() {
@@ -17,10 +20,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void mount() async {
+    String alamat = await getAlamat();
     String email = await getEmail();
+    String nama = await getNama();
+    String noTelp = await getNoTelp();
 
     setState(() {
+      _alamat = alamat;
       _email = email;
+      _nama = nama;
+      _noTelp = noTelp;
     });
   }
 
@@ -30,41 +39,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: Text('Profil'),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('users').where('email', isEqualTo: _email).snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          DocumentSnapshot document = snapshot.data.documents[0];
-          //print('id : ${snapshot.data.documents[0].documentID}');
-          Map<String, dynamic> task = document.data;
-          return ListView.builder(
-              itemCount: 3,
-              itemBuilder: (BuildContext context, int index){
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-                    leading: Icon(
-                      index == 0 ? Icons.account_circle :
-                      index == 1 ? Icons.email :
-                      Icons.phone,
-                      size: 30.0,
-                    ),
-                    title: Text(
-                      index == 0 ? '${task['nama']}' :
-                      index == 1 ? '${task['email']}' :
-                      '${task['no_telp']}',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                      ),
+      body: Container(
+        child: ListView.builder(
+            itemCount: 4,
+            itemBuilder: (BuildContext context, int index){
+              return Card(
+                margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+                  leading: Icon(
+                    index == 0 ? Icons.account_circle :
+                    index == 1 ? Icons.email :
+                    index == 2 ? Icons.phone :
+                    Icons.home,
+                    size: 30.0,
+                  ),
+                  title: Text(
+                    index == 0 ? '$_nama' :
+                    index == 1 ? '$_email' :
+                    index == 2 ? '$_noTelp' :
+                    '$_alamat',
+                    style: TextStyle(
+                      fontSize: 20.0,
                     ),
                   ),
-                );
-              });
-          },
+                ),
+              );
+            }),
       ),
     );
   }
