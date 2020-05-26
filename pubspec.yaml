@@ -28,10 +28,13 @@ dependencies:
   local_auth: ^0.6.2+2
   cloud_firestore: ^0.13.5
   flutter_secure_storage: ^3.3.3
+  excel: ^1.0.5
+  path: ^1.7.0
+  path_provider: any
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  # flutter_test:
+  #   sdk: flutter
 
 
 # For information on the generic Dart part of this file, see the

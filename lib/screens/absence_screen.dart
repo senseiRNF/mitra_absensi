@@ -1,10 +1,14 @@
+import 'dart:io';
+import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
 import 'package:mitraabsensi/components/ok_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:mitraabsensi/services/shared_preference.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AbsenceScreen extends StatefulWidget {
   @override
@@ -29,7 +33,10 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
   String _checkIn;
   String _checkOut;
 
+  BuildContext _context;
+
   var _db = Firestore.instance;
+  var _excel = Excel.createExcel();
 
   @override
   void initState() {
@@ -148,14 +155,14 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
     });
 
     _db.collection(collectionName).document(absenceId).updateData({'check_in' : '$updateValue'}).then((result){
-      okDialog(context, 'Absen masuk berhasil diperbaharui');
+      okDialog(_context, 'Absen masuk berhasil diperbaharui');
 
       setState(() {
         _loading = false;
       });
     }).catchError((error){
       print(error);
-      okDialog(context, error);
+      okDialog(_context, error);
 
       setState(() {
         _loading = false;
@@ -169,19 +176,107 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
     });
 
     _db.collection(collectionName).document(absenceId).updateData({'check_out' : '$updateValue'}).then((result){
-      okDialog(context, 'Absen keluar berhasil diperbaharui');
+      okDialog(_context, 'Absen keluar berhasil diperbaharui');
 
       setState(() {
         _loading = false;
       });
     }).catchError((error){
       print(error);
-      okDialog(context, error);
+      okDialog(_context, error);
 
       setState(() {
         _loading = false;
       });
     });
+  }
+
+  void updateFile() async {
+    _db.collection('absensi').snapshots().listen((data) {
+      if(data.documents.length != 0){
+        _excel.updateCell('Sheet1', CellIndex.indexByString("A1"), "Tanggal",
+            backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
+
+        _excel.updateCell('Sheet1', CellIndex.indexByString("B1"), "ID Karyawan",
+            backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
+
+        _excel.updateCell('Sheet1', CellIndex.indexByString("C1"), "Nama Karyawan",
+            backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
+
+        _excel.updateCell('Sheet1', CellIndex.indexByString("D1"), "Absen Masuk",
+            backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
+
+        _excel.updateCell('Sheet1', CellIndex.indexByString("E1"), "Absen Keluar",
+            backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
+
+        for(int i = 0; i < data.documents.length; i++){
+          _excel.updateCell(
+              'Sheet1',
+              CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i+1),
+              "${data.documents[i].data['tanggal']}",
+              wrap: TextWrapping.WrapText);
+
+          _excel.updateCell(
+              'Sheet1',
+              CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i+1),
+              "${data.documents[i].data['user_id']}",
+              wrap: TextWrapping.WrapText);
+
+          _db.collection('users').document('${data.documents[i].data['user_id']}').snapshots().listen((datauser) {
+            _excel.updateCell(
+                'Sheet1',
+                CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: i+1),
+                "${datauser['nama']}",
+                wrap: TextWrapping.WrapText);
+
+            createExcel();
+          });
+
+          _excel.updateCell(
+              'Sheet1',
+              CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: i+1),
+              "${data.documents[i].data['check_in']}",
+              wrap: TextWrapping.WrapText);
+
+          _excel.updateCell(
+              'Sheet1',
+              CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: i+1),
+              "${data.documents[i].data['check_out']}",
+              wrap: TextWrapping.WrapText);
+        }
+      } else {
+        setState(() {
+          _loading = false;
+        });
+
+        okDialog(_context, 'Dokumen tidak ditemukan');
+      }
+    });
+  }
+
+  void createExcel() async {
+    var dir = await getExternalStorageDirectory();
+
+    try {
+      _excel.encode().then((onValue) {
+        File(join('${dir.path}/exported-$_stringToday.xlsx'))
+          ..createSync(recursive: true)
+          ..writeAsBytesSync(onValue);
+
+        setState(() {
+          _loading = false;
+        });
+
+        okDialog(_context, 'Sukses mengeskpor dokumen, data dapat dilihat di ${dir.path}/exported-$_stringToday.xlsx');
+      });
+    } on Exception catch(e) {
+      print(e);
+      setState(() {
+        _loading = false;
+      });
+
+      okDialog(_context, 'Gagal mengekspor dokumen, silahkan coba lagi');
+    }
   }
 
   Future<void> onRefresh() async {
@@ -194,9 +289,24 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      _context = context;
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text('Absensi'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.import_export),
+            onPressed: () {
+              setState(() {
+                _loading = true;
+              });
+
+              updateFile();
+            },
+          )
+        ],
       ),
       body: _loading ?  Center(
         child: CircularProgressIndicator(),

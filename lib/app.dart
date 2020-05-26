@@ -1,9 +1,7 @@
 import 'package:mitraabsensi/screens/absence_screen.dart';
-import 'package:mitraabsensi/screens/help_screen.dart';
 import 'package:mitraabsensi/screens/login_screen.dart';
 import 'package:mitraabsensi/screens/home_screen.dart';
 import 'package:mitraabsensi/screens/profile_screen.dart';
-import 'package:mitraabsensi/screens/setting_screen.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatelessWidget {
@@ -19,8 +17,6 @@ class App extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/absence': (context) => AbsenceScreen(),
         '/profile': (context) => ProfileScreen(),
-        '/setting': (context) => SettingScreen(),
-        '/help': (context) => HelpScreen(),
       },
     );
   }

@@ -45,22 +45,6 @@ class NavDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Pengaturan'),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/setting');
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.help),
-            title: Text('Bantuan'),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/help');
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () {
