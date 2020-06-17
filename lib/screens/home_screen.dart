@@ -50,8 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
           _lat = _position.latitude;
           _lon = _position.longitude;
-          _officeLat = -6.304820;
-          _officeLon = 106.848635;
+          //_officeLat = -6.304820;
+          _officeLat = -6.461362;
+          //_officeLon = 106.848635;
+          _officeLon = 107.033151;
 
           _successLoad = true;
           _loading = false;
@@ -112,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      drawer: NavDrawer(),
+      drawer: NavDrawer(isInCoverage: _isInCoverage,),
       body: Container(
         child: _loading ?
         Center(

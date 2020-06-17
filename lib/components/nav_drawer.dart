@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:mitraabsensi/components/ok_dialog.dart';
 import 'package:mitraabsensi/services/shared_preference.dart';
 
-class NavDrawer extends StatelessWidget {
+class NavDrawer extends StatefulWidget {
+  final isInCoverage;
 
+  NavDrawer({@required this.isInCoverage});
+
+  @override
+  _NavDrawerState createState() => _NavDrawerState();
+}
+
+class _NavDrawerState extends State<NavDrawer> {
   void logout(context) async {
     await clearStorage();
     Navigator.of(context).pop();
@@ -32,8 +41,13 @@ class NavDrawer extends StatelessWidget {
             leading: Icon(Icons.access_time),
             title: Text('Absensi'),
             onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/absence');
+              if(widget.isInCoverage) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed('/absence');
+              } else {
+                Navigator.of(context).pop();
+                okDialog(context, 'Anda harus berada di wilayah cakupan untuk absen');
+              }
             },
           ),
           ListTile(

@@ -29,6 +29,7 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
 
   String _userId;
   String _absenceId;
+  String _userRole;
   String _stringToday;
   String _checkIn;
   String _checkOut;
@@ -47,9 +48,11 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
 
   void mount() async {
     var userId = await getID();
+    var userRole = await getRole();
 
     setState(() {
       _userId = userId;
+      _userRole = userRole;
       _stringToday = DateFormat('dd-MM-yyyy').format(_today);
     });
 
@@ -192,7 +195,7 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
   }
 
   void updateFile() async {
-    _db.collection('absensi').snapshots().listen((data) {
+    _db.collection('absensi').orderBy('tanggal').snapshots().listen((data) {
       if(data.documents.length != 0){
         _excel.updateCell('Sheet1', CellIndex.indexByString("A1"), "Tanggal",
             backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
@@ -209,7 +212,7 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
         _excel.updateCell('Sheet1', CellIndex.indexByString("E1"), "Absen Keluar",
             backgroundColorHex: "#FFFFFF", horizontalAlign: HorizontalAlign.Center);
 
-        for(int i = 0; i < data.documents.length; i++){
+        for(int i = 0; i < data.documents.length; ++i){
           _excel.updateCell(
               'Sheet1',
               CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i+1),
@@ -229,7 +232,9 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
                 "${datauser['nama']}",
                 wrap: TextWrapping.WrapText);
 
-            createExcel();
+            if(data.documents.length - i == 1) {
+              createExcel();
+            }
           });
 
           _excel.updateCell(
@@ -296,6 +301,7 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
       appBar: AppBar(
         title: Text('Absensi'),
         actions: <Widget>[
+          !_loading ? _userRole == 'admin' ?
           IconButton(
             icon: Icon(Icons.import_export),
             onPressed: () {
@@ -305,7 +311,9 @@ class _AbsenceScreenState extends State<AbsenceScreen> {
 
               updateFile();
             },
-          )
+          ) :
+          Container() :
+          Container(),
         ],
       ),
       body: _loading ?  Center(

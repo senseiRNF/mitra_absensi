@@ -57,29 +57,37 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
     });
 
-    _db.collection(collectionName).where('email', isEqualTo: email).where('password', isEqualTo: pass).snapshots().listen((data) {
-      if(data.documents.length != 0){
-        setState(() {
-          _loading = false;
-        });
+    try {
+      _db.collection(collectionName).where('email', isEqualTo: email).where('password', isEqualTo: pass).snapshots().listen((data) {
+        if(data.documents.length != 0){
+          setState(() {
+            _loading = false;
+          });
 
-        setID(data.documents[0].documentID);
-        setAlamat(data.documents[0].data['alamat']);
-        setEmail(data.documents[0].data['email']);
-        setNama(data.documents[0].data['nama']);
-        setNoTelp(data.documents[0].data['no_telp']);
-        setRole(data.documents[0].data['role']);
-        setStatus(data.documents[0].data['status']);
+          setID(data.documents[0].documentID);
+          setAlamat(data.documents[0].data['alamat']);
+          setEmail(data.documents[0].data['email']);
+          setNama(data.documents[0].data['nama']);
+          setNoTelp(data.documents[0].data['no_telp']);
+          setRole(data.documents[0].data['role']);
+          setStatus(data.documents[0].data['status']);
 
-        Navigator.of(context).pushReplacementNamed('/home');
-      } else {
-        setState(() {
-          _loading = false;
-        });
+          Navigator.of(context).pushReplacementNamed('/home');
+        } else {
+          setState(() {
+            _loading = false;
+          });
 
-        okDialog(context, 'Gagal masuk, silahkan coba lagi');
-      }
-    });
+          okDialog(context, 'Gagal masuk, silahkan coba lagi');
+        }
+      });
+    } on Exception catch(e) {
+      setState(() {
+        _loading = false;
+      });
+
+      okDialog(context, 'Gagal masuk, silahkan coba lagi');
+    }
   }
 
   @override
